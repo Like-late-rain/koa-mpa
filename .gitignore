@@ -1,0 +1,86 @@
+# 依赖目录
+node_modules/
+jspm_packages/
+
+# TypeScript 编译输出
+dist/
+build/
+*.js.map
+*.d.ts.map
+
+# 日志文件
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# 环境变量
+.env
+.env.local
+.env.development
+.env.development.local
+.env.test
+.env.test.local
+.env.staging
+.env.staging.local
+.env.production
+.env.production.local
+.env.aws
+.env.sam
+.env.sdc
+# 保留 .env.example 用于示例
+
+# 测试覆盖率
+coverage/
+*.lcov
+.nyc_output
+
+# IDE 和编辑器
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+.history
+
+# 临时文件
+*.tmp
+*.temp
+.cache/
+.temp/
+
+# 操作系统
+Thumbs.db
+Desktop.ini
+
+# 可选的 npm 缓存目录
+.npm
+
+# 可选的 eslint 缓存
+.eslintcache
+
+# yarn 相关
+.yarn/cache
+.yarn/unplugged
+.yarn/build-state.yml
+.yarn/install-state.gz
+.pnp.*
+
+/generated/prisma
+
+lambda.zip
+# .md
+DEPLOYMENT-CHECKLIST.md
+COMMANDS.md
+
+# Assets 构建产物
+assets/scripts/*.bundle.js
+assets/scripts/*.bundle.js.LICENSE.txt
+assets/scripts/*.LICENSE.txt
+assets/styles/*.*.css
+!assets/styles/index.css
+!assets/styles/user.css

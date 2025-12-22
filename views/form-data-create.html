@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %></title>
+    <link rel="stylesheet" href="styles/index.css">
+    <link rel="stylesheet" href="styles/user.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container">
+            <h1>Koa MPA</h1>
+            <ul class="nav-links">
+                <li><a href="/">首页</a></li>
+                <li><a href="/users">用户列表</a></li>
+                <li><a href="/form-data" class="active">表单数据</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <main class="container">
+        <div class="form-container">
+            <h2>创建表单数据</h2>
+
+            <div id="alert-message" class="alert" style="display: none;"></div>
+
+            <form id="create-form-data">
+                <div class="form-group">
+                    <label for="field1">字段1 <span class="required">*</span></label>
+                    <input
+                        type="text"
+                        id="field1"
+                        name="field1"
+                        placeholder="请输入字段1的内容"
+                        required
+                    >
+                    <span class="error-message" id="field1-error"></span>
+                </div>
+
+                <div class="form-group">
+                    <label for="field2">字段2 <span class="required">*</span></label>
+                    <input
+                        type="text"
+                        id="field2"
+                        name="field2"
+                        placeholder="请输入字段2的内容"
+                        required
+                    >
+                    <span class="error-message" id="field2-error"></span>
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary" id="submit-btn">
+                        创建数据
+                    </button>
+                    <a href="/form-data" class="btn btn-secondary">取消</a>
+                </div>
+            </form>
+        </div>
+    </main>
+
+    <footer>
+        <p>&copy; 2024 Koa MPA</p>
+    </footer>
+
+    <script>
+        document.getElementById('create-form-data').addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            const field1 = document.getElementById('field1').value.trim();
+            const field2 = document.getElementById('field2').value.trim();
+            const alertDiv = document.getElementById('alert-message');
+            const submitBtn = document.getElementById('submit-btn');
+
+            // 清除之前的错误
+            alertDiv.style.display = 'none';
+            document.getElementById('field1-error').textContent = '';
+            document.getElementById('field2-error').textContent = '';
+
+            // 验证
+            let hasError = false;
+            if (!field1) {
+                document.getElementById('field1-error').textContent = '字段1不能为空';
+                hasError = true;
+            }
+            if (!field2) {
+                document.getElementById('field2-error').textContent = '字段2不能为空';
+                hasError = true;
+            }
+
+            if (hasError) return;
+
+            // 禁用按钮
+            submitBtn.disabled = true;
+            submitBtn.textContent = '创建中...';
+
+            try {
+                const response = await fetch('/form-data/create', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ field1, field2 })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    alertDiv.className = 'alert alert-success';
+                    alertDiv.textContent = '创建成功！正在跳转...';
+                    alertDiv.style.display = 'block';
+
+                    setTimeout(() => {
+                        window.location.href = '/form-data';
+                    }, 1000);
+                } else {
+                    alertDiv.className = 'alert alert-error';
+                    alertDiv.textContent = data.message || '创建失败';
+                    alertDiv.style.display = 'block';
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = '创建数据';
+                }
+            } catch (err) {
+                console.error(err);
+                alertDiv.className = 'alert alert-error';
+                alertDiv.textContent = '请求失败，请重试';
+                alertDiv.style.display = 'block';
+                submitBtn.disabled = false;
+                submitBtn.textContent = '创建数据';
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %></title>
+    <link rel="stylesheet" href="styles/index.css">
+    <link rel="stylesheet" href="styles/user.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container">
+            <h1>Koa MPA</h1>
+            <ul class="nav-links">
+                <li><a href="/">首页</a></li>
+                <li><a href="/users">用户列表</a></li>
+                <li><a href="/form-data" class="active">表单数据</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <main class="container">
+        <div class="user-list-container">
+            <div class="user-list-header">
+                <h2>表单数据列表</h2>
+                <a href="/form-data/create" class="btn btn-primary">+ 创建新数据</a>
+            </div>
+
+            <% if (formDataList && formDataList.length > 0) { %>
+                <table class="user-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>字段1</th>
+                            <th>字段2</th>
+                            <th>创建时间</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% formDataList.forEach(function(item) { %>
+                            <tr data-id="<%= item.id %>">
+                                <td><code><%= item.id.substring(0, 8) %>...</code></td>
+                                <td><%= item.field1 %></td>
+                                <td><%= item.field2 %></td>
+                                <td><%= new Date(item.createdAt).toLocaleString('zh-CN') %></td>
+                                <td>
+                                    <div class="action-buttons">
+                                        <button class="btn btn-secondary btn-sm" onclick="viewItem('<%= item.id %>')" title="查看">
+                                            查看
+                                        </button>
+                                        <button class="btn btn-danger btn-sm" onclick="deleteItem('<%= item.id %>')" title="删除">
+                                            删除
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        <% }); %>
+                    </tbody>
+                </table>
+            <% } else { %>
+                <div class="empty-state">
+                    <div class="empty-state-icon">📋</div>
+                    <h3>暂无表单数据</h3>
+                    <p>创建第一条数据开始使用吧</p>
+                    <a href="/form-data/create" class="btn btn-primary">创建数据</a>
+                </div>
+            <% } %>
+        </div>
+    </main>
+
+    <footer>
+        <p>&copy; 2024 Koa MPA</p>
+    </footer>
+
+    <script>
+        function viewItem(id) {
+            fetch(`/form-data/${id}`)
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) {
+                        alert(`表单数据详情:\nID: ${data.data.id}\n字段1: ${data.data.field1}\n字段2: ${data.data.field2}\n创建时间: ${new Date(data.data.createdAt).toLocaleString('zh-CN')}`);
+                    } else {
+                        alert('获取数据详情失败');
+                    }
+                })
+                .catch(err => {
+                    console.error(err);
+                    alert('请求失败');
+                });
+        }
+
+        function deleteItem(id) {
+            if (!confirm('确定要删除这条数据吗？')) {
+                return;
+            }
+
+            fetch(`/form-data/${id}/delete`, {
+                method: 'POST'
+            })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) {
+                        alert('删除成功');
+                        location.reload();
+                    } else {
+                        alert('删除失败: ' + data.message);
+                    }
+                })
+                .catch(err => {
+                    console.error(err);
+                    alert('请求失败');
+                });
+        }
+    </script>
+</body>
+</html>

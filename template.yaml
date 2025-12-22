@@ -1,0 +1,125 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Transform: AWS::Serverless-2016-10-31
+
+Globals:
+  Function:
+    Timeout: 30
+    MemorySize: 1024
+    Runtime: nodejs20.x
+    Architectures: ["arm64"]
+    Environment:
+      Variables:
+        NODE_OPTIONS: "--enable-source-maps"
+    EphemeralStorage:
+      Size: 512
+  Api:
+    OpenApiVersion: "2.0"
+    Cors:
+      AllowMethods: "'*'"
+      AllowHeaders: "'Content-Type,Authorization'"
+      AllowOrigin: "'*'"
+      MaxAge: 600
+
+Resources:
+  NodeModulesLayer:
+    Type: AWS::Serverless::LayerVersion
+    Properties:
+      LayerName: nest-dependencies
+      Description: Node modules for Nest.js application
+      ContentUri: layer/
+      CompatibleRuntimes:
+        - nodejs20.x
+      RetentionPolicy: Retain
+
+  Api:
+    Type: AWS::Serverless::Api
+    Properties:
+      StageName: dev
+      BinaryMediaTypes:
+        - "image/*"
+        - "multipart/form-data"
+      Auth:
+        DefaultAuthorizer: NONE
+
+  # 数据库迁移 Lambda 函数
+  MigrateFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: migrate-lambda.handler
+      CodeUri: ./migrate
+      Runtime: nodejs20.x
+      Timeout: 60
+      MemorySize: 256
+      Policies:
+        - VPCAccessPolicy: {}
+      VpcConfig:
+        SubnetIds:
+          - subnet-0df6a05038394aa6b
+          - subnet-0858bd9de8995561c
+          - subnet-0f5f1b4825ca67653
+        SecurityGroupIds:
+          - sg-0ff6e423260bc65e4
+      Environment:
+        Variables:
+          DATABASE_URL: "postgresql://postgres:Ycy488929@koa-mpa-aurora-cluster.cluster-cdc00uia8wy3.ap-northeast-1.rds.amazonaws.com:5432/postgres?schema=public"
+
+  KoaFunction:
+    Type: AWS::Serverless::Function
+    Metadata:
+      SkipBuild: true
+    Properties:
+      Handler: lambda.handler
+      CodeUri: ./dist
+      MemorySize: 3008
+      Timeout: 30
+      Layers:
+        - !Ref NodeModulesLayer
+      Policies:
+        - VPCAccessPolicy: {}
+      # VPC 配置 - 部署前需要手动替换这些值
+      VpcConfig:
+        # 替换为你的私有子网 ID（3个私有子网）
+        SubnetIds:
+          - subnet-0df6a05038394aa6b # 私有子网 1
+          - subnet-0858bd9de8995561c # 私有子网 2
+          - subnet-0f5f1b4825ca67653 # 私有子网 3
+        # 替换为你的 Lambda 安全组 ID
+        SecurityGroupIds:
+          - sg-0ff6e423260bc65e4 # koa-mpa-lambda-sg
+      # 环境变量
+      Environment:
+        Variables:
+          NODE_ENV: production
+          PORT: 8082
+          LOG_LEVEL: error
+          # 替换为你的 RDS 连接字符串
+          DATABASE_URL: "postgresql://postgres:Ycy488929@koa-mpa-aurora-cluster.cluster-cdc00uia8wy3.ap-northeast-1.rds.amazonaws.com:5432/postgres?schema=public&connection_limit=5"
+      Events:
+        RootEvent:
+          Type: Api
+          Properties:
+            Path: /
+            Method: ANY
+            RestApiId: !Ref Api
+            Auth:
+              Authorizer: NONE
+        ApiEvent:
+          Type: Api
+          Properties:
+            Path: /{proxy+}
+            Method: ANY
+            RestApiId: !Ref Api
+            Auth:
+              Authorizer: NONE
+      AutoPublishAlias: live
+
+Outputs:
+  ApiEndpoint:
+    Description: API Gateway endpoint URL
+    Value: !Sub "https://${Api}.execute-api.${AWS::Region}.amazonaws.com/dev"
+  FunctionArn:
+    Description: Lambda Function ARN
+    Value: !GetAtt KoaFunction.Arn
+  MigrateFunctionName:
+    Description: Migration Lambda Function Name
+    Value: !Ref MigrateFunction

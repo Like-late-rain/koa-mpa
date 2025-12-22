@@ -1,0 +1,55 @@
+{
+  "compilerOptions": {
+    /* 基本选项 */
+    "target": "ES2020", // 编译目标 ES 版本
+    "module": "commonjs", // 模块系统
+    "lib": ["ES2020"], // 包含的库文件
+    "outDir": "./dist", // 输出目录
+    "rootDir": "./", // 源码根目录
+
+    /* 严格类型检查 */
+    "strict": true, // 启用所有严格类型检查选项
+    "noImplicitAny": true, // 不允许隐式 any 类型
+    "strictNullChecks": true, // 严格的 null 检查
+    "strictFunctionTypes": true, // 严格的函数类型检查
+    "strictBindCallApply": true, // 严格的 bind/call/apply 检查
+    "strictPropertyInitialization": true, // 严格的属性初始化检查
+    "noImplicitThis": true, // 不允许隐式 this
+    "alwaysStrict": true, // 始终以严格模式解析
+
+    /* 额外检查 */
+    "noUnusedLocals": true, // 检查未使用的局部变量
+    "noUnusedParameters": true, // 检查未使用的参数
+    "noImplicitReturns": true, // 检查函数是否有隐式返回
+    "noFallthroughCasesInSwitch": true, // 检查 switch 语句的 fallthrough
+
+    /* 模块解析 */
+    "moduleResolution": "node", // 模块解析策略
+    "esModuleInterop": true, // 启用 ES 模块互操作性
+    "allowSyntheticDefaultImports": true, // 允许合成默认导入
+    "resolveJsonModule": true, // 允许导入 JSON 模块
+    "baseUrl": "./", // 基础路径
+    "paths": {
+      // 路径映射
+      "@/*": ["*"],
+      "@config": ["config/index"], // @config 映射到 config/index
+      "@config/*": ["config/*"], // @config/* 映射到 config/*
+      "@middlewares/*": ["middlewares/*"],
+      "@generated/*": ["generated/*"],
+      "@services/*": ["services/*"],
+      "@lib/*": ["lib/*"]
+    },
+
+    /* 其他选项 */
+    "skipLibCheck": true, // 跳过库文件的类型检查
+    "forceConsistentCasingInFileNames": true, // 强制文件名大小写一致
+    "declaration": true, // 生成 .d.ts 声明文件
+    "declarationMap": true, // 生成声明文件的 source map
+    "sourceMap": true, // 生成 source map
+    "removeComments": false, // 保留注释
+    "experimentalDecorators": true, // 启用装饰器
+    "emitDecoratorMetadata": true // 为装饰器生成元数据
+  },
+  "include": ["**/*.ts", "webpack.config.js"],
+  "exclude": ["node_modules", "dist", "**/*.spec.ts", "**/*.test.ts"]
+}

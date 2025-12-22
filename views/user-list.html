@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title><%= title %></title>
+    <link rel="stylesheet" href="styles/index.css" />
+    <link rel="stylesheet" href="styles/user.css" />
+  </head>
+  <body>
+    <nav class="navbar">
+      <div class="container">
+        <h1>Koa MPA</h1>
+        <ul class="nav-links">
+          <li><a href="/">首页</a></li>
+          <li><a href="/users" class="active">用户列表</a></li>
+          <li><a href="/users/create">创建用户</a></li>
+          <li><a href="/form-data">表单数据</a></li>
+          <li><a href="/github">GitHub 登录</a></li>
+        </ul>
+      </div>
+    </nav>
+
+    <main class="container">
+      <div class="user-list-container">
+        <div class="user-list-header">
+          <h2>用户列表</h2>
+          <div class="action-buttons">
+            <a href="/users/create" class="btn btn-primary">+ 创建用户</a>
+            <a href="/github" class="btn btn-secondary">GitHub 登录</a>
+          </div>
+        </div>
+
+        <% if (users && users.length > 0) { %>
+        <table class="user-table">
+          <thead>
+            <tr>
+              <th>用户</th>
+              <th>来源</th>
+              <th>邮箱</th>
+              <th>创建时间</th>
+              <th>操作</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% users.forEach(function(user) { %>
+            <tr>
+              <td>
+                <div class="user-info">
+                  <% if (user.avatarUrl) { %>
+                  <img
+                    src="<%= user.avatarUrl %>"
+                    alt="avatar"
+                    class="user-avatar"
+                  />
+                  <% } else { %>
+                  <div class="user-avatar-placeholder">
+                    <%= user.username.charAt(0).toUpperCase() %>
+                  </div>
+                  <% } %>
+                  <div class="user-info-text">
+                    <span class="user-name"
+                      ><%= user.name || user.username %></span
+                    >
+                    <span class="user-username">@<%= user.username %></span>
+                  </div>
+                </div>
+              </td>
+              <td>
+                <% if (user.githubId) { %>
+                <span class="badge badge-github">GitHub</span>
+                <% } else { %>
+                <span class="badge badge-manual">手动创建</span>
+                <% } %>
+              </td>
+              <td><%= user.email || '-' %></td>
+              <td><%= new Date(user.createdAt).toLocaleString('zh-CN') %></td>
+              <td>
+                <div class="action-buttons">
+                  <button
+                    class="btn btn-secondary btn-sm"
+                    onclick="viewUser('<%= user.id %>')"
+                    title="查看"
+                  >
+                    查看
+                  </button>
+                  <button
+                    class="btn btn-danger btn-sm"
+                    onclick="deleteUser('<%= user.id %>', '<%= user.username %>')"
+                    title="删除"
+                  >
+                    删除
+                  </button>
+                </div>
+              </td>
+            </tr>
+            <% }); %>
+          </tbody>
+        </table>
+        <% } else { %>
+        <div class="empty-state">
+          <div class="empty-state-icon">👥</div>
+          <h3>暂无用户</h3>
+          <p>创建第一个用户开始使用吧</p>
+          <a href="/users/create" class="btn btn-primary">创建用户</a>
+        </div>
+        <% } %>
+      </div>
+    </main>
+
+    <footer>
+      <p>&copy; 2024 Koa MPA 学习项目</p>
+    </footer>
+
+    <script>
+      function viewUser(id) {
+        fetch(`/users/${id}`)
+          .then((res) => res.json())
+          .then((data) => {
+            if (data.success) {
+              alert(
+                `用户详情:\nID: ${data.data.id}\n用户名: ${
+                  data.data.username
+                }\n姓名: ${data.data.name || "未设置"}\n邮箱: ${
+                  data.data.email || "未设置"
+                }\nGitHub ID: ${data.data.githubId}`
+              );
+            } else {
+              alert("获取用户详情失败");
+            }
+          })
+          .catch((err) => {
+            console.error(err);
+            alert("请求失败");
+          });
+      }
+
+      function deleteUser(id, username) {
+        if (!confirm(`确定要删除用户 "${username}" 吗？此操作不可恢复。`)) {
+          return;
+        }
+
+        fetch(`/users/${id}`, {
+          method: "DELETE"
+        })
+          .then((res) => res.json())
+          .then((data) => {
+            if (data.success) {
+              alert("用户删除成功");
+              window.location.reload();
+            } else {
+              alert(data.message || "删除失败");
+            }
+          })
+          .catch((err) => {
+            console.error(err);
+            alert("请求失败");
+          });
+      }
+    </script>
+  </body>
+</html>
