@@ -1,11 +1,11 @@
-import type PrismaService from "./PrismaService";
+import type { PrismaClient } from "@generated/prisma";
 import type {
   CreateFormDataBody,
-  UpdateFormDataBody,
+  FormDataApi,
   FormDataBody,
-  FormDataApi
+  UpdateFormDataBody
 } from "@/interface/FormDataApi";
-import type { PrismaClient } from "@generated/prisma";
+import type PrismaService from "./PrismaService";
 
 /**
  * 表单数据服务
@@ -58,10 +58,7 @@ class FormDataService implements FormDataApi {
   /**
    * 更新表单数据
    */
-  async updateFormData(
-    id: string,
-    data: UpdateFormDataBody
-  ): Promise<FormDataBody> {
+  async updateFormData(id: string, data: UpdateFormDataBody): Promise<FormDataBody> {
     return await this.prisma.formData.update({
       where: { id },
       data

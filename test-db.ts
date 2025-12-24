@@ -1,7 +1,7 @@
 import { PrismaClient } from "./generated/prisma";
 
 const prisma = new PrismaClient({
-  log: ["query", "info", "warn", "error"],
+  log: ["query", "info", "warn", "error"]
 });
 
 async function testDatabaseConnection() {
@@ -21,8 +21,8 @@ async function testDatabaseConnection() {
         username: "test-user",
         email: `test-${Date.now()}@example.com`,
         avatarUrl: "https://github.com/identicons/test.png",
-        name: "Test User",
-      },
+        name: "Test User"
+      }
     });
     console.log("✅ 创建用户成功:", testUser);
     console.log();
@@ -30,7 +30,7 @@ async function testDatabaseConnection() {
     // 3. 读取用户 (Read)
     console.log("3️⃣ 测试 READ 操作 - 查询用户...");
     const users = await prisma.user.findMany({
-      take: 5,
+      take: 5
     });
     console.log(`✅ 查询到 ${users.length} 个用户`);
     console.log();
@@ -41,11 +41,11 @@ async function testDatabaseConnection() {
       data: {
         field1: "测试字段1",
         field2: "测试字段2",
-        userId: testUser.id,
+        userId: testUser.id
       },
       include: {
-        user: true,
-      },
+        user: true
+      }
     });
     console.log("✅ 创建表单数据成功:", formData);
     console.log();
@@ -55,8 +55,8 @@ async function testDatabaseConnection() {
     const updatedUser = await prisma.user.update({
       where: { id: testUser.id },
       data: {
-        name: "Updated Test User",
-      },
+        name: "Updated Test User"
+      }
     });
     console.log("✅ 更新用户成功:", updatedUser);
     console.log();
@@ -67,8 +67,8 @@ async function testDatabaseConnection() {
       where: { id: testUser.id },
       include: {
         formData: true,
-        sessions: true,
-      },
+        sessions: true
+      }
     });
     console.log("✅ 关联查询成功:");
     console.log(`   用户: ${userWithFormData?.name}`);
@@ -78,12 +78,12 @@ async function testDatabaseConnection() {
     // 7. 删除测试数据 (Delete)
     console.log("7️⃣ 测试 DELETE 操作 - 清理测试数据...");
     await prisma.formData.delete({
-      where: { id: formData.id },
+      where: { id: formData.id }
     });
     console.log("✅ 删除表单数据成功");
 
     await prisma.user.delete({
-      where: { id: testUser.id },
+      where: { id: testUser.id }
     });
     console.log("✅ 删除用户成功");
     console.log();

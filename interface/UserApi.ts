@@ -12,12 +12,15 @@ export type UpdateUserBody = {
   email?: string | null;
   avatarUrl?: string | null;
   name?: string | null;
+  signature?: string; // 用户签名（用于验证更新请求）
+  timestamp?: number; // 时间戳（用于验证更新请求）
 };
 
 // 定义获取用户列表的响应体
 export type UserBody = {
   id: string;
   githubId: string | null; // 手动创建的用户可能没有 GitHub ID
+  walletAddress: string | null; // 钱包地址
   username: string;
   email: string | null;
   avatarUrl: string | null;
@@ -29,6 +32,7 @@ export type UserBody = {
 export type UserInfoBody = {
   id: string;
   githubId: string | null; // 手动创建的用户可能没有 GitHub ID
+  walletAddress: string | null; // 钱包地址
   username: string;
   email: string | null;
   avatarUrl: string | null;

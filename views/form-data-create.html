@@ -4,17 +4,17 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><%= title %></title>
-    <link rel="stylesheet" href="styles/index.css">
-    <link rel="stylesheet" href="styles/user.css">
+    <link rel="stylesheet" href="<%= basePath %>/styles/index.css">
+    <link rel="stylesheet" href="<%= basePath %>/styles/user.css">
 </head>
 <body>
     <nav class="navbar">
         <div class="container">
             <h1>Koa MPA</h1>
             <ul class="nav-links">
-                <li><a href="/">首页</a></li>
-                <li><a href="/users">用户列表</a></li>
-                <li><a href="/form-data" class="active">表单数据</a></li>
+                <li><a href="<%= basePath %>/">首页</a></li>
+                <li><a href="<%= basePath %>/users">用户列表</a></li>
+                <li><a href="<%= basePath %>/form-data" class="active">表单数据</a></li>
             </ul>
         </div>
     </nav>
@@ -54,7 +54,7 @@
                     <button type="submit" class="btn btn-primary" id="submit-btn">
                         创建数据
                     </button>
-                    <a href="/form-data" class="btn btn-secondary">取消</a>
+                    <a href="<%= basePath %>/form-data" class="btn btn-secondary">取消</a>
                 </div>
             </form>
         </div>
@@ -65,6 +65,7 @@
     </footer>
 
     <script>
+      const basePath = "<%= basePath %>";
         document.getElementById('create-form-data').addEventListener('submit', async function(e) {
             e.preventDefault();
 

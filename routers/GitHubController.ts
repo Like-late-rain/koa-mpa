@@ -1,7 +1,7 @@
-import { GET, POST, route } from "awilix-koa";
-import type { Context } from "koa";
 import type GitHubService from "@services/GitHubService";
 import type UserService from "@services/UserService";
+import { GET, POST, route } from "awilix-koa";
+import type { Context } from "koa";
 
 @route("/github")
 class GitHubController {
@@ -71,7 +71,8 @@ class GitHubController {
       ctx.status = 401;
       ctx.body = {
         success: false,
-        message: error instanceof Error ? error.message : "获取 GitHub 用户信息失败，请检查 Token 是否有效"
+        message:
+          error instanceof Error ? error.message : "获取 GitHub 用户信息失败，请检查 Token 是否有效"
       };
     }
   }

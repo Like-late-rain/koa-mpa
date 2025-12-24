@@ -1,7 +1,7 @@
 import type Koa from "koa";
 import type { Logger } from "log4js";
 
-// biome-ignore lint/complexity/noStaticOnlyClass: <explanation>
+// biome-ignore lint/complexity/noStaticOnlyClass: utility class for error middleware setup
 class ErrorHandler {
   static async error(app: Koa, logger: Logger) {
     app.use(async (ctx, next) => {

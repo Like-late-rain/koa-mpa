@@ -15,15 +15,17 @@ addAliases({
 });
 
 import config from "@config";
+import cors from "@koa/cors";
 import render from "@koa/ejs";
+import basePathMiddleware from "@middlewares/BasePath";
 import ErrorHandler from "@middlewares/ErrorHandler";
 import { createContainer, Lifetime } from "awilix";
 import { loadControllers, scopePerRequest } from "awilix-koa";
 import Koa from "koa";
-import { configure, getLogger } from "log4js";
-import serve from "koa-static";
 import bodyParser from "koa-bodyparser";
+import serve from "koa-static";
 import historyApiFallback from "koa2-connect-history-api-fallback";
+import { configure, getLogger } from "log4js";
 
 const app = new Koa();
 
@@ -45,6 +47,16 @@ configure({
 // 创建容器
 const container = createContainer();
 const { port, viewDir, memoryFlag, staticDir } = config;
+
+// CORS 配置 - 允许跨域请求
+app.use(
+  cors({
+    origin: "*", // 开发环境允许所有来源，生产环境应该指定具体域名
+    credentials: true, // 允许携带 cookie
+    allowMethods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
+    allowHeaders: ["Content-Type", "Authorization", "Accept"]
+  })
+);
 
 app.use(serve(staticDir));
 
@@ -76,8 +88,16 @@ render(app, {
   debug: false
 });
 
+// 添加 basePath 到所有模板
+app.use(basePathMiddleware);
+
 //除去api 以外的路由 全部映射回index.html 让前端路由来处理
-app.use(historyApiFallback({ index: "/", whiteList: ["/api", "/form-data", "/github", "/users", "/styles", "/scripts", "/favicon"] }));
+app.use(
+  historyApiFallback({
+    index: "/",
+    whiteList: ["/api", "/form-data", "/github", "/users", "/styles", "/scripts", "/favicon"]
+  })
+);
 
 // 日志
 const logger = getLogger("cheese");

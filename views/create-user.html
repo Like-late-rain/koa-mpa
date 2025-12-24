@@ -4,19 +4,19 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title><%= title %></title>
-    <link rel="stylesheet" href="styles/index.css" />
-    <link rel="stylesheet" href="styles/user.css" />
+    <link rel="stylesheet" href="<%= basePath %>/styles/index.css" />
+    <link rel="stylesheet" href="<%= basePath %>/styles/user.css" />
   </head>
   <body>
     <nav class="navbar">
       <div class="container">
         <h1>Koa MPA</h1>
         <ul class="nav-links">
-          <li><a href="/">首页</a></li>
-          <li><a href="/users">用户列表</a></li>
-          <li><a href="/users/create" class="active">创建用户</a></li>
-          <li><a href="/form-data">表单数据</a></li>
-          <li><a href="/github">GitHub 登录</a></li>
+          <li><a href="<%= basePath %>/">首页</a></li>
+          <li><a href="<%= basePath %>/users">用户列表</a></li>
+          <li><a href="<%= basePath %>/users/create" class="active">创建用户</a></li>
+          <li><a href="<%= basePath %>/form-data">表单数据</a></li>
+          <li><a href="<%= basePath %>/github">GitHub 登录</a></li>
         </ul>
       </div>
     </nav>
@@ -64,12 +64,12 @@
             <button type="submit" class="btn btn-primary" id="submit-btn">
               创建用户
             </button>
-            <a href="/users" class="btn btn-secondary">取消</a>
+            <a href="<%= basePath %>/users" class="btn btn-secondary">取消</a>
           </div>
         </form>
 
         <p style="margin-top: 20px; color: #666">
-          提示：也可以通过 <a href="/github">GitHub Token 登录</a> 自动创建用户
+          提示：也可以通过 <a href="<%= basePath %>/github">GitHub Token 登录</a> 自动创建用户
         </p>
       </div>
     </main>
@@ -79,6 +79,8 @@
     </footer>
 
     <script>
+      const basePath = "<%= basePath %>";
+
       document
         .getElementById("create-user-form")
         .addEventListener("submit", async function (e) {
@@ -106,7 +108,7 @@
           submitBtn.textContent = "创建中...";
 
           try {
-            const response = await fetch("/users/create", {
+            const response = await fetch(basePath + "/users/create", {
               method: "POST",
               headers: {
                 "Content-Type": "application/json"
@@ -126,7 +128,7 @@
               alertDiv.style.display = "block";
 
               setTimeout(() => {
-                window.location.href = "/users";
+                window.location.href = basePath + "/users";
               }, 1000);
             } else {
               alertDiv.className = "alert alert-error";

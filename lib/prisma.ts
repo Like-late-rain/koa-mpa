@@ -20,10 +20,10 @@ const pool = new pg.Pool({
   ...(isProduction || isAWS
     ? {
         ssl: {
-          rejectUnauthorized: false,
-        },
+          rejectUnauthorized: false
+        }
       }
-    : {}),
+    : {})
 });
 
 // 创建 Prisma PostgreSQL 适配器
@@ -32,10 +32,7 @@ const adapter = new PrismaPg(pool);
 // 创建全局 PrismaClient 实例
 export const prisma = new PrismaClient({
   adapter,
-  log:
-    process.env.NODE_ENV === "development"
-      ? ["query", "error", "warn"]
-      : ["error"],
+  log: process.env.NODE_ENV === "development" ? ["query", "error", "warn"] : ["error"]
 });
 
 // 数据库预热函数 - 用于唤醒 Aurora Serverless v2（ACU=0 时需要）

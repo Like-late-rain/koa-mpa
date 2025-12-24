@@ -1,11 +1,11 @@
 import { join } from "node:path";
-import _ from "lodash";
 
 let config = {
   viewDir: join(__dirname, "..", "views"),
   staticDir: join(__dirname, "..", "assets"),
   port: process.env.PORT ? parseInt(process.env.PORT, 10) : 8081,
-  memoryFlag: false
+  memoryFlag: false,
+  basePath: "" // Lambda Function URL 不需要路径前缀
 };
 
 if (process.env.NODE_ENV === "development") {
@@ -13,7 +13,7 @@ if (process.env.NODE_ENV === "development") {
     prot: process.env.PORT ? parseInt(process.env.PORT, 10) : 8081
   };
 
-  config = _.assignIn(config, localConfig);
+  config = Object.assign(config, localConfig);
 }
 
 if (process.env.NODE_ENV === "production") {
@@ -22,7 +22,7 @@ if (process.env.NODE_ENV === "production") {
     memoryFlag: "memory"
   };
 
-  config = _.assignIn(config, prodConfig);
+  config = Object.assign(config, prodConfig);
 }
 
 export default config;

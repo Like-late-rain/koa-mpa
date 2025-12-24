@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><%= title %></title>
-    <link rel="stylesheet" href="styles/index.css">
-    <link rel="stylesheet" href="styles/user.css">
+    <link rel="stylesheet" href="<%= basePath %>/styles/index.css">
+    <link rel="stylesheet" href="<%= basePath %>/styles/user.css">
     <style>
         .github-info {
             background: #f6f8fa;
@@ -60,10 +60,10 @@
         <div class="container">
             <h1>Koa MPA</h1>
             <ul class="nav-links">
-                <li><a href="/">首页</a></li>
-                <li><a href="/users">用户列表</a></li>
-                <li><a href="/form-data">表单数据</a></li>
-                <li><a href="/github" class="active">GitHub 登录</a></li>
+                <li><a href="<%= basePath %>/">首页</a></li>
+                <li><a href="<%= basePath %>/users">用户列表</a></li>
+                <li><a href="<%= basePath %>/form-data">表单数据</a></li>
+                <li><a href="<%= basePath %>/github" class="active">GitHub 登录</a></li>
             </ul>
         </div>
     </nav>
@@ -137,6 +137,7 @@
     </footer>
 
     <script>
+      const basePath = "<%= basePath %>";
         async function fetchGitHubInfo() {
             const token = document.getElementById('token').value.trim();
             const alertDiv = document.getElementById('alert-message');

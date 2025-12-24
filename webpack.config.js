@@ -1,4 +1,4 @@
-const path = require("path");
+const path = require("node:path");
 // const TerserPlugin = require('terser-webpack-plugin');
 const layerDependencies = [
   "awilix",
@@ -80,14 +80,11 @@ module.exports = {
         vendors: false,
         sources: {
           test: /\.ts$/,
-          name(module: { resource: string }) {
+          name(module) {
             if (module.resource.endsWith("lambda.ts")) {
               return false;
             }
-            const srcPath = path.relative(
-              path.join(__dirname, "src"),
-              module.resource
-            );
+            const srcPath = path.relative(path.join(__dirname, "src"), module.resource);
             return srcPath.replace(/\.ts$/, ""); // 只替换 .ts 后缀为空
           },
           chunks: "all",

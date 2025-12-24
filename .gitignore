@@ -84,3 +84,13 @@ assets/scripts/*.LICENSE.txt
 assets/styles/*.*.css
 !assets/styles/index.css
 !assets/styles/user.css
+
+template.yaml
+wake-db.sh
+
+# IDE 历史文件
+.history/
+
+# 调试输出文件
+output.json
+response.json

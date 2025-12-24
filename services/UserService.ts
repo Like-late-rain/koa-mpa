@@ -1,12 +1,12 @@
-import type PrismaService from "./PrismaService";
+import type { PrismaClient } from "@generated/prisma";
 import type {
   CreateUserBody,
   UpdateUserBody,
-  UserBody,
   UserApi,
+  UserBody,
   UserInfoBody
 } from "@/interface/UserApi";
-import type { PrismaClient } from "@generated/prisma";
+import type PrismaService from "./PrismaService";
 
 /**
  * 用户服务
@@ -27,6 +27,7 @@ class UserService implements UserApi {
       select: {
         id: true,
         githubId: true,
+        walletAddress: true,
         username: true,
         email: true,
         avatarUrl: true,
@@ -89,6 +90,32 @@ class UserService implements UserApi {
     return await this.prisma.user.delete({
       where: { id }
     });
+  }
+
+  /**
+   * 钱包登录/注册
+   * 如果钱包地址已存在则返回用户，否则创建新用户
+   */
+  async walletLogin(walletAddress: string): Promise<UserInfoBody> {
+    let user = await this.prisma.user.findUnique({
+      where: { walletAddress }
+    });
+
+    if (user) {
+      return user;
+    }
+
+    // 如果不存在，自动创建
+    user = await this.prisma.user.create({
+      data: {
+        walletAddress,
+        username: `User_${walletAddress.slice(0, 6)}`,
+        name: `User_${walletAddress.slice(0, 6)}`,
+        avatarUrl: null,
+        email: null
+      }
+    });
+    return user;
   }
 }
 

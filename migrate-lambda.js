@@ -1,4 +1,4 @@
-const { Client } = require('pg');
+const { Client } = require("pg");
 
 // 迁移 SQL - 来自 prisma/migrations/20251219135914_init/migration.sql
 const migrationSQL = `
@@ -88,52 +88,52 @@ WHERE NOT EXISTS (
 );
 `;
 
-exports.handler = async (event) => {
-    const client = new Client({
-        connectionString: process.env.DATABASE_URL,
-        ssl: {
-            rejectUnauthorized: false
-        }
-    });
+exports.handler = async (_event) => {
+  const client = new Client({
+    connectionString: process.env.DATABASE_URL,
+    ssl: {
+      rejectUnauthorized: false
+    }
+  });
 
-    try {
-        console.log('Connecting to database...');
-        await client.connect();
-        console.log('Connected successfully');
+  try {
+    console.log("Connecting to database...");
+    await client.connect();
+    console.log("Connected successfully");
 
-        console.log('Running migration...');
-        await client.query(migrationSQL);
-        console.log('Migration completed successfully');
+    console.log("Running migration...");
+    await client.query(migrationSQL);
+    console.log("Migration completed successfully");
 
-        // 验证表是否创建成功
-        const result = await client.query(`
+    // 验证表是否创建成功
+    const result = await client.query(`
             SELECT table_name
             FROM information_schema.tables
             WHERE table_schema = 'public'
             ORDER BY table_name
         `);
 
-        const tables = result.rows.map(r => r.table_name);
+    const tables = result.rows.map((r) => r.table_name);
 
-        return {
-            statusCode: 200,
-            body: JSON.stringify({
-                success: true,
-                message: 'Migration completed successfully',
-                tables: tables
-            })
-        };
-    } catch (error) {
-        console.error('Migration failed:', error);
-        return {
-            statusCode: 500,
-            body: JSON.stringify({
-                success: false,
-                error: error.message,
-                stack: error.stack
-            })
-        };
-    } finally {
-        await client.end();
-    }
+    return {
+      statusCode: 200,
+      body: JSON.stringify({
+        success: true,
+        message: "Migration completed successfully",
+        tables: tables
+      })
+    };
+  } catch (error) {
+    console.error("Migration failed:", error);
+    return {
+      statusCode: 500,
+      body: JSON.stringify({
+        success: false,
+        error: error.message,
+        stack: error.stack
+      })
+    };
+  } finally {
+    await client.end();
+  }
 };

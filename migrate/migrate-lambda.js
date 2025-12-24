@@ -1,4 +1,4 @@
-const { Client } = require('pg');
+const { Client } = require("pg");
 
 // 迁移 SQL - 来自 prisma/migrations/20251219135914_init/migration.sql
 const migrationSQL = `
@@ -86,54 +86,95 @@ SELECT
 WHERE NOT EXISTS (
     SELECT 1 FROM "_prisma_migrations" WHERE "migration_name" = '20251219135914_init'
 );
+
+-- Migration: 20251222064329_make_github_id_optional
+ALTER TABLE "users" ALTER COLUMN "githubId" DROP NOT NULL;
+
+INSERT INTO "_prisma_migrations" ("id", "checksum", "migration_name", "finished_at", "applied_steps_count")
+SELECT
+    gen_random_uuid()::text,
+    'manual_migration',
+    '20251222064329_make_github_id_optional',
+    now(),
+    1
+WHERE NOT EXISTS (
+    SELECT 1 FROM "_prisma_migrations" WHERE "migration_name" = '20251222064329_make_github_id_optional'
+);
+
+-- Migration: 20251223032910_add_wallet_address
+ALTER TABLE "users" ADD COLUMN IF NOT EXISTS "walletAddress" TEXT;
+CREATE UNIQUE INDEX IF NOT EXISTS "users_walletAddress_key" ON "users"("walletAddress");
+
+INSERT INTO "_prisma_migrations" ("id", "checksum", "migration_name", "finished_at", "applied_steps_count")
+SELECT
+    gen_random_uuid()::text,
+    'manual_migration',
+    '20251223032910_add_wallet_address',
+    now(),
+    1
+WHERE NOT EXISTS (
+    SELECT 1 FROM "_prisma_migrations" WHERE "migration_name" = '20251223032910_add_wallet_address'
+);
 `;
 
-exports.handler = async (event) => {
-    const client = new Client({
-        connectionString: process.env.DATABASE_URL,
-        ssl: {
-            rejectUnauthorized: false
-        }
-    });
+exports.handler = async (_event) => {
+  const client = new Client({
+    connectionString: process.env.DATABASE_URL,
+    ssl: {
+      rejectUnauthorized: false
+    }
+  });
 
-    try {
-        console.log('Connecting to database...');
-        await client.connect();
-        console.log('Connected successfully');
+  try {
+    console.log("Connecting to database...");
+    await client.connect();
+    console.log("Connected successfully");
 
-        console.log('Running migration...');
-        await client.query(migrationSQL);
-        console.log('Migration completed successfully');
+    console.log("Running migration...");
+    await client.query(migrationSQL);
+    console.log("Migration completed successfully");
 
-        // 验证表是否创建成功
-        const result = await client.query(`
+    // 验证表是否创建成功
+    const tablesResult = await client.query(`
             SELECT table_name
             FROM information_schema.tables
             WHERE table_schema = 'public'
             ORDER BY table_name
         `);
 
-        const tables = result.rows.map(r => r.table_name);
+    const tables = tablesResult.rows.map((r) => r.table_name);
+    console.log("Tables:", tables);
 
-        return {
-            statusCode: 200,
-            body: JSON.stringify({
-                success: true,
-                message: 'Migration completed successfully',
-                tables: tables
-            })
-        };
-    } catch (error) {
-        console.error('Migration failed:', error);
-        return {
-            statusCode: 500,
-            body: JSON.stringify({
-                success: false,
-                error: error.message,
-                stack: error.stack
-            })
-        };
-    } finally {
-        await client.end();
-    }
+    // 检查 users 表的列
+    const columnsResult = await client.query(`
+            SELECT column_name
+            FROM information_schema.columns
+            WHERE table_name = 'users'
+            ORDER BY column_name
+        `);
+
+    const columns = columnsResult.rows.map((r) => r.column_name);
+    console.log("Users table columns:", columns);
+
+    return {
+      statusCode: 200,
+      body: JSON.stringify({
+        success: true,
+        message: "Migration completed successfully",
+        tables: tables
+      })
+    };
+  } catch (error) {
+    console.error("Migration failed:", error);
+    return {
+      statusCode: 500,
+      body: JSON.stringify({
+        success: false,
+        error: error.message,
+        stack: error.stack
+      })
+    };
+  } finally {
+    await client.end();
+  }
 };

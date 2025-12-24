@@ -1,6 +1,6 @@
+import type FormDataService from "@services/FormDataService";
 import { GET, POST, route } from "awilix-koa";
 import type { Context } from "koa";
-import type FormDataService from "@services/FormDataService";
 import type { CreateFormDataBody, UpdateFormDataBody } from "@/interface/FormDataApi";
 
 @route("/form-data")

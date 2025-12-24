@@ -4,17 +4,17 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><%= title %></title>
-    <link rel="stylesheet" href="styles/index.css">
-    <link rel="stylesheet" href="styles/user.css">
+    <link rel="stylesheet" href="<%= basePath %>/styles/index.css">
+    <link rel="stylesheet" href="<%= basePath %>/styles/user.css">
 </head>
 <body>
     <nav class="navbar">
         <div class="container">
             <h1>Koa MPA</h1>
             <ul class="nav-links">
-                <li><a href="/">首页</a></li>
-                <li><a href="/users">用户列表</a></li>
-                <li><a href="/form-data" class="active">表单数据</a></li>
+                <li><a href="<%= basePath %>/">首页</a></li>
+                <li><a href="<%= basePath %>/users">用户列表</a></li>
+                <li><a href="<%= basePath %>/form-data" class="active">表单数据</a></li>
             </ul>
         </div>
     </nav>
@@ -23,7 +23,7 @@
         <div class="user-list-container">
             <div class="user-list-header">
                 <h2>表单数据列表</h2>
-                <a href="/form-data/create" class="btn btn-primary">+ 创建新数据</a>
+                <a href="<%= basePath %>/form-data/create" class="btn btn-primary">+ 创建新数据</a>
             </div>
 
             <% if (formDataList && formDataList.length > 0) { %>
@@ -63,7 +63,7 @@
                     <div class="empty-state-icon">📋</div>
                     <h3>暂无表单数据</h3>
                     <p>创建第一条数据开始使用吧</p>
-                    <a href="/form-data/create" class="btn btn-primary">创建数据</a>
+                    <a href="<%= basePath %>/form-data/create" class="btn btn-primary">创建数据</a>
                 </div>
             <% } %>
         </div>
@@ -74,6 +74,7 @@
     </footer>
 
     <script>
+      const basePath = "<%= basePath %>";
         function viewItem(id) {
             fetch(`/form-data/${id}`)
                 .then(res => res.json())
@@ -95,7 +96,7 @@
                 return;
             }
 
-            fetch(`/form-data/${id}/delete`, {
+            fetch(`${basePath}/form-data/${id}/delete`, {
                 method: 'POST'
             })
                 .then(res => res.json())
